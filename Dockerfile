@@ -1,13 +1,12 @@
+# Sử dụng base image nhẹ nhất
 FROM alpine:latest
 
-# Cài đặt ttyd và các công cụ cần thiết
-RUN apk add --no-cache ttyd bash htop curl
+# Cài đặt ttyd, bash và các tool cơ bản
+RUN apk add --no-cache ttyd bash curl htop vim
 
-# Tạo user để bảo mật (tùy chọn)
-RUN adduser -D terminaluser
-
-# Expose cổng 8080 (Render mặc định dùng cổng này)
+# Thiết lập cổng mặc định
 EXPOSE 8080
 
-# Chạy ttyd khi container khởi động
-CMD ["ttyd", "-p", "8080", "bash"]
+# Chạy ttyd trực tiếp với mật khẩu lấy từ biến môi trường TTY_PASS
+# Nếu không đặt biến môi trường, nó sẽ dùng mặc định là admin:123456
+CMD sh -c 'ttyd -p 8080 -c ${TTY_PASS:-admin:123456} bash'
