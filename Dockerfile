@@ -1,12 +1,16 @@
-# Sử dụng base image nhẹ nhất
+# Sử dụng base image Alpine nhẹ và ổn định
 FROM alpine:latest
 
-# Cài đặt ttyd, bash và các tool cơ bản
+# Cài đặt ttyd, bash và các công cụ cần thiết
+# -W: Bật chế độ cho phép ghi (Write) - sửa lỗi không gõ được lệnh
 RUN apk add --no-cache ttyd bash curl htop vim
 
-# Thiết lập cổng mặc định
+# Thiết lập cổng 8080
 EXPOSE 8080
 
-# Chạy ttyd trực tiếp với mật khẩu lấy từ biến môi trường TTY_PASS
-# Nếu không đặt biến môi trường, nó sẽ dùng mặc định là admin:123456
-CMD sh -c 'ttyd -p 8080 -c ${TTY_PASS:-admin:123456} bash'
+# Chạy ttyd với các tham số:
+# -p 8080: Cổng chạy web
+# -W: Cho phép viết lệnh vào terminal
+# -c ${TTY_PASS:-admin:123456}: Sử dụng biến môi trường TTY_PASS hoặc mặc định
+# bash: Chạy trình thông dịch bash
+CMD ["ttyd", "-p", "8080", "-W", "-c", "admin:123456", "bash"]
